@@ -4,6 +4,8 @@ import type { CollectibleId } from "@/lib/collectibles";
 export type SpriteName =
   | "notebook"
   | "keyboard"
+  | "keyboardPress1"
+  | "keyboardPress2"
   | "openBook"
   | "notebookPending"
   | "notebookDone"

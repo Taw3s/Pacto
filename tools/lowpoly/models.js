@@ -155,13 +155,17 @@ function bookPose(open) {
   }
   return poseFrame(g, 1.74, 0.4, 1.24, 0.18, 0.9);
 }
+// The camera looks down on the keyboard, so sinking alone barely shows: the pressed bar also darkens, as a key does in the
+// shadow of its neighbours. Two steps (half, full); the rest frame is the plain `keyboard`.
+const keyboardPress1 = () => keyboard(0.025, 0xd6cdb4);
+const keyboardPress2 = () => keyboard(0.05, 0xb9b097);
 const notebookPending = () => notebookPose(true);
 const notebookDone = () => notebookPose(false);
 const bookPending = () => bookPose(true);
 const bookDone = () => bookPose(false);
 
 /** Digitação: retro beige keyboard. */
-function keyboard() {
+function keyboard(press = 0, pressedTint = 0) {
   const g = new THREE.Group();
   const shell = box(2.0, 0.14, 0.8, mat(0xcfc3a5));
   g.add(shell);
@@ -178,8 +182,10 @@ function keyboard() {
       g.add(k);
     }
   }
-  const space = box(0.88, 0.07, 0.12, keyMat);
-  space.position.set(-0.84 + 5.5 * 0.153, 0.1, -0.2 + 3 * 0.15);
+  // `press` sinks the space bar (Hoje, typing done: down and back in 240 ms); it never rises above the back rim, so the
+  // framing of every frame matches the resting sprite
+  const space = box(0.88, 0.07, 0.12, pressedTint ? mat(pressedTint) : keyMat);
+  space.position.set(-0.84 + 5.5 * 0.153, 0.1 - press, -0.2 + 3 * 0.15);
   g.add(space);
   const led = box(0.05, 0.02, 0.03, mat(0x5cf27a));
   led.position.set(0.85, 0.17, -0.31);
@@ -1232,7 +1238,7 @@ function evidenceFolder() {
 /** App icon: the group's judge, one brow raised (suspicious of your proof), gavel at rest. Framed by icons.mjs. */
 const logoJudge = () => judgeScene({ brows: "raised", mouth: "flat", r: [-0.9, 0.3, "gavel"] });
 
-export const MODELS = { notebook, keyboard, openBook, notebookPending, notebookDone, bookPending, bookDone, computer, beachChair, sodaCan, coxinha, coffeeCup, chocolateBar, acaiBowl, pizzaSlice, iceCream, pixCoin, gavel, gavelMid, gavelUp, judgeBench, trophy, trophySilver, trophyBronze, scales, memoryCard, calendar, chest1, chest2, chest3, chest4, chest5, chest6, plant, mug, duck, cat, lamp, globe, goldBook, crown, forgottenCoffee, survivorPencil, patchedHeadphones, crookedHourglass, suspiciousLoupe, witnessPigeon, judgeSlippers, rubberGavel, goldenJudgeBust, magistrateDuck, benchFront, evidenceFolder, archiveBox, documentTray, pencilCup, ...CROWD, ...JUDGE, logoJudge };
+export const MODELS = { notebook, keyboard, keyboardPress1, keyboardPress2, openBook, notebookPending, notebookDone, bookPending, bookDone, computer, beachChair, sodaCan, coxinha, coffeeCup, chocolateBar, acaiBowl, pizzaSlice, iceCream, pixCoin, gavel, gavelMid, gavelUp, judgeBench, trophy, trophySilver, trophyBronze, scales, memoryCard, calendar, chest1, chest2, chest3, chest4, chest5, chest6, plant, mug, duck, cat, lamp, globe, goldBook, crown, forgottenCoffee, survivorPencil, patchedHeadphones, crookedHourglass, suspiciousLoupe, witnessPigeon, judgeSlippers, rubberGavel, goldenJudgeBust, magistrateDuck, benchFront, evidenceFolder, archiveBox, documentTray, pencilCup, ...CROWD, ...JUDGE, logoJudge };
 
 // ---- render --------------------------------------------------------------------
 export function render(name, size) {

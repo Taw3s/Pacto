@@ -20,9 +20,32 @@ const browser = await launch();
 const as = (email) => loginAs(browser, email);
 
 const biaP = await as("bia@pacto.test");
-await step("Bia checks in typing", async () => {
+/** Records every sprite the desk's keyboard shows from now on (window.__keys). */
+const watchKeys = (page) =>
+  page.evaluate(() => {
+    window.__keys = [];
+    const img = document.querySelector("[data-shelf=typing] img");
+    const note = () => window.__keys.push(img.getAttribute("src").replace("/lowpoly/", ""));
+    new MutationObserver(note).observe(img, { attributes: true, attributeFilter: ["src"] });
+  });
+
+await step("Bia checks in typing; the desk's space bar goes down and back once", async () => {
+  await watchKeys(biaP);
   await typingTest(biaP, biaP.locator("[data-goal=typing][data-state=pending]"));
   await biaP.locator("[data-goal=typing][data-state=done]").waitFor();
+  await biaP.waitForTimeout(600);
+  const keys = await biaP.evaluate(() => window.__keys);
+  assert(keys.filter((k) => k === "keyboardPress2.png").length === 1, `the key did not press once: ${keys.join(" ")}`);
+  assert(keys.at(-1) === "keyboard.png", `the keyboard did not come back to rest: ${keys.join(" ")}`);
+  assert((await biaP.locator("[data-shelf=typing]").getAttribute("data-shelf-state")) === "done", "typing done on the desk");
+  // Reloading shows the resting keyboard, without pressing again.
+  await biaP.reload();
+  await biaP.locator("[data-shelf=typing][data-shelf-state=done]").waitFor();
+  await watchKeys(biaP);
+  await biaP.waitForTimeout(600);
+  const again = await biaP.evaluate(() => window.__keys);
+  assert(again.length === 0, `pressed again after reload: ${again.join(" ")}`);
+  assert((await biaP.locator("[data-shelf=typing] img").getAttribute("src")) === "/lowpoly/keyboard.png", "resting keyboard after reload");
 });
 
 const ana = await as("ana@pacto.test");
