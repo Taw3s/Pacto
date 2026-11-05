@@ -1,7 +1,7 @@
 // The judge's animations: which frames (public/lowpoly/judge-*.png, made by tools/lowpoly) play
 // in which order and for how long. Purely visual: nothing here decides anything.
 
-export type JudgeAction = "idle" | "think" | "unsure" | "stamp" | "present" | "gavel" | "session";
+export type JudgeAction = "idle" | "think" | "unsure" | "stamp" | "present" | "gavel" | "session" | "close";
 
 export interface JudgeSequence {
   frames: { id: string; ms: number }[];
@@ -47,6 +47,22 @@ export const JUDGE: Record<JudgeAction, JudgeSequence> = {
     ],
     impact: 4,
     still: "idle1",
+    startBy: 600,
+  },
+  // encerramento ao vivo (brief of 04/11, PR 2): looks at the result (the paper), one strike, the closed pose; ~520 ms,
+  // inside the 600 ms of the brief. Only when the session closes with the page open; a later visit shows `gavel8` still.
+  close: {
+    frames: [
+      { id: "think1", ms: 120 },
+      { id: "gavel3", ms: 80 },
+      { id: "gavel4", ms: 100 },
+      { id: "gavel5", ms: 60 },
+      { id: "gavel6", ms: 100 },
+      { id: "gavel7", ms: 60 },
+      { id: "gavel8", ms: 0 },
+    ],
+    impact: 3,
+    still: "gavel8",
     startBy: 600,
   },
 };

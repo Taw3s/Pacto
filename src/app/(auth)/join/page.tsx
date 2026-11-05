@@ -100,14 +100,14 @@ function JoinForm() {
         router.refresh();
         return;
       }
-      if (error && (error.code === "23503" || error.message.includes("not authenticated"))) {
+      if (error && (error.code === "23503" || error.message?.includes("not authenticated"))) {
         // The account behind this session no longer exists.
         await supabase.auth.signOut({ scope: "local" });
         router.replace("/login?error=session");
         return;
       }
       if (error) {
-        setError(error.message.includes("invalid") ? "Código de convite inválido." : "Não foi possível entrar no grupo. Tente de novo.");
+        setError(error.message?.includes("invalid") ? "Código de convite inválido." : "Não foi possível entrar no grupo. Tente de novo.");
         setBusy(false);
         return;
       }

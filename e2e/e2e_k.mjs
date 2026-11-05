@@ -106,7 +106,7 @@ await step("the proof opens enlarged in the page; Esc closes it and focus return
   assert(focused.startsWith("Ampliar a foto"), `focus went to: ${focused}`);
 });
 
-await step("reduced motion: the judge never changes frame", async () => {
+await step("reduced motion: the judge never changes frame; a confirmed vote shows the closed ballot box at once", async () => {
   const ctx = await browser.newContext({ ...devices["iPhone 13"], locale: "pt-BR", timezoneId: "America/Sao_Paulo", reducedMotion: "reduce" });
   const p = await ctx.newPage();
   await p.goto(`${APP}/login`);
@@ -123,6 +123,21 @@ await step("reduced motion: the judge never changes frame", async () => {
   await p.getByTestId("dispute").waitFor();
   const { seen: scene } = await sceneFor(p, 1500);
   assert(scene.length === 1 && scene[0] === "idle1|0", `scene with reduced motion: ${scene.join(" ")}`);
+  // Fab votes with reduced motion: the closed ballot box and the text at once, no frames in between.
+  await p.evaluate(() => {
+    window.__ballot = [];
+    new MutationObserver(() => {
+      const b = document.querySelector('[data-testid="ballot-box"] img')?.getAttribute("data-frame");
+      if (b && window.__ballot.at(-1) !== b) window.__ballot.push(b);
+    }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-frame"] });
+  });
+  await p.getByTestId("vote-form").getByRole("button", { name: /^Manter a prova/ }).click();
+  await p.fill("#vote-reason", "Dá para ver o livro aberto na foto");
+  await p.getByRole("button", { name: "Confirmar voto" }).click();
+  await p.getByTestId("ballot-box").getByText("Seu voto foi registrado.").waitFor();
+  await p.waitForTimeout(400);
+  const ballot = await p.evaluate(() => window.__ballot);
+  assert(ballot.join(",") === "ballotBox", `ballot with reduced motion: ${ballot.join(",")}`);
   await ctx.close();
 });
 

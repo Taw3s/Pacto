@@ -15,7 +15,7 @@ const ERRORS: Record<string, string> = {
 
 function message(error: { message: string; code?: string }) {
   if (error.code === "23505") return "Isso já foi registrado.";
-  return Object.entries(ERRORS).find(([k]) => error.message.includes(k))?.[1] ?? "Não foi possível salvar. Tente de novo.";
+  return Object.entries(ERRORS).find(([k]) => error.message?.includes(k))?.[1] ?? "Não foi possível salvar. Tente de novo.";
 }
 
 interface Props {
