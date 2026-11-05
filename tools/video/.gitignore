@@ -1,0 +1,6 @@
+node_modules/
+demo/out/
+demo/out-capture.log
+demo/gemini_mock.log
+public/
+out/

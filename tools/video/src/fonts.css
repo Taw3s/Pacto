@@ -1,0 +1,15 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource/pixelify-sans/latin-400.css";
+@import "@fontsource/pixelify-sans/latin-700.css";
+
+/* As in the app (src/app/globals.css): the pixel type takes its digits from Inter (in Pixelify, 5 reads as S). */
+@font-face {
+  font-family: "Pacto Digits";
+  font-weight: 100 900;
+  src: url("../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0030-0039;
+}
+
+.sprite {
+  image-rendering: pixelated;
+}

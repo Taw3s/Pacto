@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#26292e">
+<title>Sem conexão · Pacto</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+    padding: 24px 16px; background: #26292e; color: #f5f1e6;
+    font: 16px/24px ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-image: conic-gradient(rgb(255 255 255 / .025) 25%, transparent 0 50%, rgb(255 255 255 / .025) 0 75%, transparent 0);
+    background-size: 4px 4px;
+  }
+  main {
+    width: 100%; max-width: 360px; padding: 20px; background: #363a41; border: 2px solid;
+    border-color: #575d67 #1a1c20 #1a1c20 #575d67; box-shadow: 4px 4px 0 #141518; border-radius: 2px; text-align: center;
+  }
+  img { width: 96px; height: 96px; image-rendering: pixelated; filter: brightness(.8) saturate(.6); }
+  .shelf { height: 10px; margin: 0 auto 16px; max-width: 200px; background: #8a6a45; border-bottom: 4px solid #5e4527; }
+  h1 { margin: 0 0 8px; font: 700 26px/30px ui-monospace, "Courier New", monospace; letter-spacing: .04em; text-transform: uppercase; color: #ffcd38; }
+  p { margin: 0 0 16px; color: #bdb7a8; }
+  button {
+    width: 100%; min-height: 48px; border: 2px solid; border-color: #fff0b3 #b38a00 #b38a00 #fff0b3; border-radius: 2px;
+    background: #ffcd38; color: #2b2100; font: 700 18px ui-monospace, "Courier New", monospace; text-transform: uppercase;
+    box-shadow: 3px 3px 0 #141518; cursor: pointer;
+  }
+  button:focus-visible { outline: 2px solid #ffcd38; outline-offset: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <img src="/lowpoly/computer.png" alt="" width="96" height="96">
+  <div class="shelf" aria-hidden="true"></div>
+  <h1>Sem conexão</h1>
+  <p>O Pacto precisa de internet para mostrar as provas, enviar fotos e votar. Nada se perdeu: o prazo de hoje continua até 23:59.</p>
+  <button type="button" onclick="location.reload()">Tentar de novo</button>
+</main>
+</body>
+</html>

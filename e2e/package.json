@@ -1,0 +1,17 @@
+{
+  "name": "pacto-e2e",
+  "private": true,
+  "type": "module",
+  "description": "End-to-end tests for Pacto (Playwright + axe) against a local Supabase. See README.md.",
+  "scripts": {
+    "test": "bash run.sh",
+    "test:security": "node security.mjs",
+    "test:security:extended": "node security-extended.mjs",
+    "test:security:depth": "node security-depth.mjs",
+    "test:security:transactions": "node security-transactions.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "playwright": "1.56.1"
+  }
+}

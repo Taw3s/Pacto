@@ -1,0 +1,13 @@
+{
+  "name": "pacto-lowpoly",
+  "private": true,
+  "type": "module",
+  "description": "Source models and exporter of the app's low-poly sprites (public/lowpoly).",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.56.1",
+    "three": "0.170.0"
+  }
+}

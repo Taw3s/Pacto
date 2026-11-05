@@ -1,0 +1,62 @@
+# Local Supabase (Supabase CLI: `supabase start`), used by the end-to-end tests in e2e/.
+# Production is configured in the Supabase dashboard; nothing here is deployed.
+project_id = "pactus"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+
+[db.seed]
+enabled = false
+
+[realtime]
+enabled = false
+
+[studio]
+enabled = false
+
+# Mail catcher for magic links (the tests read it through its HTTP API).
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "10MiB"
+
+[storage.image_transformation]
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/**"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+
+[auth.rate_limit]
+email_sent = 1000
+sign_in_sign_ups = 1000
+token_verifications = 1000
+token_refresh = 1000
+
+[auth.email]
+enable_signup = true
+# Accounts are usable right away: the invite code, not the e-mail, is what gates the group.
+enable_confirmations = false
+double_confirm_changes = false
+max_frequency = "1s"
+
+[edge_runtime]
+enabled = false
+
+[analytics]
+enabled = false

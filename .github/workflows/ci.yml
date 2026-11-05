@@ -1,0 +1,132 @@
+# Runs on every pull request (and on main): lint, types, unit tests, database tests and the
+# end-to-end suite (Playwright + axe) against a throwaway local Supabase. Never touches production.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Lint, types, unit and database tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - name: Database tests (RLS, triggers, tribunal) on a throwaway Postgres
+        run: npm run test:db
+
+  e2e:
+    name: End-to-end (Playwright + axe)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      APP_URL: http://localhost:3000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      # Shows the Google button; the test only checks the redirect (no real Google sign-in).
+      NEXT_PUBLIC_GOOGLE_LOGIN: "1"
+      # Fake Gemini started by e2e/run.sh: no real key is ever used in CI.
+      GEMINI_API_KEY: test-key
+      GEMINI_API_URL: http://127.0.0.1:54400
+      # Lets the app deliver to the fake push service on 127.0.0.1 (never set in production).
+      PUSH_TEST_SERVICE: "1"
+      CRON_SECRET: local-e2e-cron-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            e2e/package-lock.json
+      # Pinned: CLI 3.0.0 (02/11/2026) rejects [inbucket] in supabase/config.toml. Upgrade on purpose, not by `latest`.
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.0
+
+      - name: Start local Supabase (applies supabase/migrations)
+        run: supabase start -x realtime,studio,imgproxy,edge-runtime,logflare,vector,supavisor,postgres-meta
+
+      - name: Export local Supabase URL and keys
+        run: |
+          eval "$(supabase status -o env)"
+          {
+            echo "SUPABASE_URL=$API_URL"
+            echo "SUPABASE_ANON_KEY=$ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY"
+          } >> "$GITHUB_ENV"
+
+      - name: Build the app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install test dependencies and Chromium
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Start the app
+        run: |
+          nohup npx next start -p 3000 > next.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3000/login && exit 0; sleep 1; done
+          cat next.log; exit 1
+
+      - name: Bound membership cleanup integration on the local stack
+        run: npm run test:security:binding
+
+      - name: Controlled security checks on the local stack
+        working-directory: e2e
+        run: npm run test:security
+
+      - name: Concurrent membership and proof checks on the local stack
+        working-directory: e2e
+        run: npm run test:security:transactions
+
+      - name: Extended adversarial checks on the local stack
+        working-directory: e2e
+        run: npm run test:security:extended
+
+      - name: Deep typing and media checks on the local stack
+        working-directory: e2e
+        run: npm run test:security:depth
+
+      - name: End-to-end suite
+        working-directory: e2e
+        run: bash run.sh
+
+      - name: Upload screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screens-and-logs
+          path: |
+            e2e/shots/
+            e2e/gemini_mock.log
+            e2e/security-extended-results.json
+            e2e/security-depth-results.json
+            e2e/security-transactions-results.json
+            next.log
+          if-no-files-found: ignore
+          retention-days: 14
