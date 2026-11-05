@@ -123,7 +123,7 @@ Coleção de 8 para 18 objetos, em três PRs, um de cada vez:
 ## Hoje, mesa de trabalho (brief do Astra de 04/11/2026)
 
 - [x] Poses estáticas: caderno com o canto levantado/assentado, livro aberto/fechado, teclado igual; tampo de 8 px; anulada com a pose de pendente; pendente mais claro (0,92/0,85).
-- [ ] Animação: ao concluir a digitação, uma tecla desce e volta (240 ms, 4 quadros), só na transição confirmada; recarregar mostra a pose sem animar.
+- [x] Animação da tecla (05/11): a barra de espaço desce e volta (240 ms, 4 quadros) só na transição confirmada para "feita"; recarregar e movimento reduzido mostram o teclado parado.
 - [x] Desktop: lateral "O grupo hoje" com Tribunal, Progresso e Ranking; máximo de 1160 px, 24 px entre as colunas, sem `sticky`; 1024 px continua em uma coluna.
 
 ## Tribunal vivo (brief do Astra de 04/11/2026)

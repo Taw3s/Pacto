@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, Check, Clock, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { msUntilEndOfDay } from "@/lib/dates";
 import { GOALS, type DailyGoal } from "@/lib/types";
 import { Sprite, type SpriteName } from "./Sprite";
@@ -52,8 +52,40 @@ const POSE: Record<DailyGoal, Record<"pending" | "done", SpriteName>> = {
   reading: { pending: "bookPending", done: "bookDone" },
 };
 
+// Typing done (Astra brief of 04/11): the space bar goes down and back in 240 ms, four frames of 60 ms. The sprites stay
+// the same size and framing, so only the bar changes.
+const KEY_FRAMES: SpriteName[] = ["keyboardPress1", "keyboardPress2", "keyboardPress1", "keyboard"];
+const KEY_FRAME_MS = 60;
+
+/**
+ * The keyboard's frame. It moves only when typing turns "done" while this desk is on screen (the proof was just confirmed by
+ * the server and the page refreshed in place); a page opened with typing already done, a remount, a hidden tab and reduced
+ * motion show the resting keyboard. Nothing is stored: the transition itself is the trigger.
+ */
+function useKeyPress(state: GoalState): SpriteName | null {
+  const [frame, setFrame] = useState<SpriteName | null>(null);
+  const prev = useRef(state);
+  useEffect(() => {
+    // The two pressed frames (~1 KB each) are fetched only while typing can still turn done.
+    if (state !== "done") for (const f of ["keyboardPress1", "keyboardPress2"]) new Image().src = `/lowpoly/${f}.png`;
+  }, [state]);
+  useEffect(() => {
+    const was = prev.current;
+    prev.current = state;
+    if (was === "done" || state !== "done") return;
+    if (document.hidden || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timers = KEY_FRAMES.map((f, i) => setTimeout(() => setFrame(i === KEY_FRAMES.length - 1 ? null : f), i * KEY_FRAME_MS));
+    return () => {
+      timers.forEach(clearTimeout);
+      setFrame(null);
+    };
+  }, [state]);
+  return frame;
+}
+
 /** The desk: one low-poly prop per goal on a wooden top, posed by the goal's state. */
 function Shelf({ states }: { states: Record<DailyGoal, GoalState> }) {
+  const keyFrame = useKeyPress(states.typing);
   return (
     <div className="@container">
       {/* 96 px from a 240 px desk (the sprites' transparent margins may overlap, the props do not), else 48 px: never an in-between scale */}
@@ -64,7 +96,7 @@ function Shelf({ states }: { states: Record<DailyGoal, GoalState> }) {
             <li key={g.id} className="flex flex-col items-center" data-shelf={g.id} data-shelf-state={s}>
               <div className="relative">
                 <Sprite
-                  name={POSE[g.id][s === "done" ? "done" : "pending"]}
+                  name={(g.id === "typing" && keyFrame) || POSE[g.id][s === "done" ? "done" : "pending"]}
                   scale={2}
                   className={`h-12 w-12 @min-[240px]:h-24 @min-[240px]:w-24 ${s === "done" ? "" : "brightness-[0.92] saturate-[0.85]"}`}
                 />
