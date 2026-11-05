@@ -19,6 +19,8 @@ O Pacto tem duas camadas:
 
 ## Bugs para corrigir
 
+- [x] **`error.message.includes` sem proteção** (05/11): um erro do Supabase sem `message` (falha de rede, resposta vazia) quebrava o tratamento e travava o botão em "enviando". Agora `error.message?.includes` em todo o app.
+
 - [x] **Varredura responsiva (27/10):** nenhuma tela rolava para os lados, mas nomes longos viravam "…" (Hoje, ranking, pódio, tribunal, jurados) e três alvos de toque tinham menos de 44 px (nome no Feed, "Como a pontuação funciona", seta do mês em 320 px). Corrigido.
 - [x] **Números ilegíveis (beta, 27/10):** na fonte pixel o 5 parecia S e o 3 parecia 8 (ranking, placar, código de convite). Corrigido: os algarismos usam a Inter, as letras continuam pixel.
 - [x] **Imagem da prova de digitação não mudava ao refazer o teste** (PR #26): Hoje, Feed e página da prova desenham o cartão do melhor teste do dia. Falta: o tribunal ainda mostra a imagem guardada.
@@ -129,11 +131,11 @@ Coleção de 8 para 18 objetos, em três PRs, um de cada vez:
 ## Tribunal vivo (brief do Astra de 04/11/2026)
 
 - [x] PR 1: entrada do tribunal (uma batida de abertura, uma vez por pessoa e tribunal) e plateia genérica de costas; tribunal encerrado parado. Q1 = A e Q2 = A aplicadas pela recomendação; o dono pode reverter.
-- [ ] PR 2 (depois do merge do PR 1): cédula entrando na urna (320 ms, 4 quadros, só após confirmação do servidor; nada em voto já registrado ou repetido) e batida única na transição ao vivo para encerrado (até 600 ms, resultado em texto antes do fim). Se voto e encerramento chegarem juntos, só o encerramento anima. Arte nova: urna e cédula em `tools/lowpoly`.
+- [x] PR 2 (05/11): cédula entrando na urna (320 ms, 4 quadros, só após confirmação do servidor) e batida única na transição ao vivo para encerrado (~520 ms). Voto e encerramento juntos: só o encerramento anima. Arte em `tools/lowpoly/ballot.js`; prancha 48/96/144 para o Astra.
 - [ ] Reserva, um PR por item e só com pedido: aba vinho da prova levantando (240 ms), juiz olhando a pasta enquanto a IA analisa (ciclo de 1,8 s só com processamento confirmado), canto do recibo dobrando no recebimento, juiz se recostando na folga.
 - [x] Salão cheio (ajuste final do Astra de 04/11): cinco fileiras de costas no lugar da plateia de dois bancos, também no tribunal encerrado (Q4 = A); estático.
 - [x] Movimento da multidão (05/11): pequenos grupos se ajeitam com atrasos diferentes junto com a batida, tudo parado até 1,2 s; uma vez por pessoa e tribunal, nunca com movimento reduzido.
-- [ ] PR 2: **Q3 = A** (04/11), sem polling: a batida de encerramento só aparece quando o voto da própria pessoa encerra o tribunal.
+- [x] **Q3 = A** (04/11), sem polling: a batida de encerramento só aparece quando o voto da própria pessoa encerra o tribunal.
 - [ ] O carimbo "Condenado/Absolvido" ainda marca a pessoa (pendência antiga do Astra).
 
 ## Sessão de design do Astra (03/11/2026)
@@ -177,7 +179,9 @@ Preparado no repositório privado, para abrir num repositório público **novo**
 - [x] Varredura de segredos no histórico inteiro (245 commits, 89 branches): nenhuma chave nos formatos de Supabase, Google, Resend, Sentry, GitHub, Stripe, Slack ou PEM; o único `.env` já commitado é o `.env.example`. (O `gitleaks` não pôde ser baixado na sessão; a varredura foi feita por padrões no `git log -p`.)
 - [x] Revisão: RLS ligado nas 24 tabelas, `security definer` com `search_path`, views com `security_invoker`, `service_role` só no servidor, correções da auditoria de 29/10 presentes. CI sem segredos e sem `pull_request_target`.
 - [x] Nomes de pessoas do beta tirados deste arquivo; README reescrito; `SECURITY.md`; licença AGPL-3.0 declarada no README e no `package.json`.
-- [ ] Dono: pedir o "ok" do GXDZ1 para publicar o código dos anexos sob a AGPL.
-- [ ] Dono: criar o repositório público novo a partir do `main`, adicionar o `LICENSE` pelo modelo do GitHub ("Add file → Create new file → LICENSE → Choose a license template → GNU AGPLv3") e ligar "Private vulnerability reporting" (Settings → Security).
-- [ ] Dono: nos commits do repositório novo, usar o e-mail `noreply` do GitHub, não o pessoal.
+- [x] "Ok" do GXDZ1 para publicar o código dos anexos sob a AGPL (05/11, por mensagem ao dono).
+- [x] Repositório público `Taw3s/pacto` criado em 05/11 pelo template, a partir do `main` de depois do #83 (sem a tecla do #84, que entra na próxima atualização). Histórico só com os commits do dono; `LICENSE` com a **AGPL v3** (a primeira tentativa entrou com a GPL v3 por engano e foi trocada no mesmo dia).
+- [x] "Private vulnerability reporting" ligado em `Taw3s/pacto` (05/11, pelo dono).
+- [x] Commits do repositório novo com o e-mail `noreply` do GitHub, não o pessoal.
+- **Q5 = A** (decisão do dono em 05/11): o desenvolvimento continua neste repositório privado (Vercel, CI e PRs sem mudança). O público é uma cópia: criado pelo template do GitHub ("Template repository" ligado só durante a criação; o repositório gerado começa com um commit, sem o histórico) e atualizado de tempos em tempos por um PR de sincronização no próprio `Taw3s/pacto` (um commit com os arquivos do `main` privado, sem o histórico). Repetir o template não serve para atualizar: ele cria outro repositório. Antes de cada atualização, conferir que nada de nomes do beta, números de retenção ou e-mail pessoal entrou nos arquivos.
 

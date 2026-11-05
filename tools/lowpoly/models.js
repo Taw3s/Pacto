@@ -2,6 +2,7 @@
 import * as THREE from "./node_modules/three/build/three.module.js";
 import { archiveBox, documentTray, pencilCup } from "./decor.js";
 import { CROWD } from "./crowd.js";
+import { BALLOT } from "./ballot.js";
 import { forgottenCoffee, survivorPencil, patchedHeadphones, crookedHourglass, suspiciousLoupe, witnessPigeon, judgeSlippers, rubberGavel, goldenJudgeBust, magistrateDuck } from "./collectibles.js";
 
 // ---- tiny pixel textures -------------------------------------------------------
@@ -1238,7 +1239,7 @@ function evidenceFolder() {
 /** App icon: the group's judge, one brow raised (suspicious of your proof), gavel at rest. Framed by icons.mjs. */
 const logoJudge = () => judgeScene({ brows: "raised", mouth: "flat", r: [-0.9, 0.3, "gavel"] });
 
-export const MODELS = { notebook, keyboard, keyboardPress1, keyboardPress2, openBook, notebookPending, notebookDone, bookPending, bookDone, computer, beachChair, sodaCan, coxinha, coffeeCup, chocolateBar, acaiBowl, pizzaSlice, iceCream, pixCoin, gavel, gavelMid, gavelUp, judgeBench, trophy, trophySilver, trophyBronze, scales, memoryCard, calendar, chest1, chest2, chest3, chest4, chest5, chest6, plant, mug, duck, cat, lamp, globe, goldBook, crown, forgottenCoffee, survivorPencil, patchedHeadphones, crookedHourglass, suspiciousLoupe, witnessPigeon, judgeSlippers, rubberGavel, goldenJudgeBust, magistrateDuck, benchFront, evidenceFolder, archiveBox, documentTray, pencilCup, ...CROWD, ...JUDGE, logoJudge };
+export const MODELS = { notebook, keyboard, keyboardPress1, keyboardPress2, openBook, notebookPending, notebookDone, bookPending, bookDone, computer, beachChair, sodaCan, coxinha, coffeeCup, chocolateBar, acaiBowl, pizzaSlice, iceCream, pixCoin, gavel, gavelMid, gavelUp, judgeBench, trophy, trophySilver, trophyBronze, scales, memoryCard, calendar, chest1, chest2, chest3, chest4, chest5, chest6, plant, mug, duck, cat, lamp, globe, goldBook, crown, forgottenCoffee, survivorPencil, patchedHeadphones, crookedHourglass, suspiciousLoupe, witnessPigeon, judgeSlippers, rubberGavel, goldenJudgeBust, magistrateDuck, benchFront, evidenceFolder, archiveBox, documentTray, pencilCup, ...CROWD, ...BALLOT, ...JUDGE, logoJudge };
 
 // ---- render --------------------------------------------------------------------
 export function render(name, size) {

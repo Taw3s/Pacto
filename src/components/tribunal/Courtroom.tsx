@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element -- signed URL of the proof */
 import { Maximize2 } from "lucide-react";
 import { Avatar } from "../Avatar";
-import { GavelStamp } from "../GavelStamp";
 import { JudgeBubble } from "../Judge";
 import { PhotoViewer } from "../PhotoViewer";
 import { Sprite } from "../Sprite";
 import { CourtBench } from "./CourtBench";
 import { CourtCrowd } from "./CourtCrowd";
+import { VoteArea } from "./VoteArea";
 import { JuryBench } from "./JuryBench";
 import { VoteForm } from "./VoteForm";
 import type { Verdict } from "@/lib/ai-review";
@@ -185,33 +185,34 @@ export function Courtroom({ disputeId, result, groupName, defendant, defendantAv
         <div aria-hidden className="mt-3 h-3 rounded-[1px] border-b-4 border-wood-dark bg-wood shadow-[0_3px_0_var(--color-hard-shadow)]" />
       </div>
 
-      {/* verdict or my vote */}
+      {/* verdict or my vote: VoteArea stays mounted across the refresh that follows a vote (ballot or live closing) */}
       <div className="p-4">
-        {!open ? (
-          <GavelStamp
-            playKey={verdictKey}
-            showJudge={false}
-            tone={upheld ? "fail" : "done"}
-            stamp={upheld ? "Condenado" : "Absolvido"}
-            note={
-              upheld
-                ? `${result.yes} a ${result.no}. Prova anulada: esta prova não conta e a meta deixa de valer.`
-                : `${result.no} a ${result.yes}. Prova mantida: a prova continua valendo.`
-            }
-            testId="verdict"
-          />
-        ) : me.vote ? (
-          <p className="font-medium">
-            Seu voto: <b className={me.vote.upheld ? "text-fail" : "text-done"}>{me.vote.upheld ? "anular a prova" : "manter a prova"}</b> (
-            {me.vote.upheld ? "culpado" : "inocente"}).
-          </p>
-        ) : me.isOwner ? (
-          <p className="text-sm text-muted">Você é o réu e não vota. Use a aba Provas para se defender.</p>
-        ) : me.joinedLate ? (
-          <p className="text-sm text-muted">Você entrou no grupo depois que este tribunal foi aberto e não vota.</p>
-        ) : me.canVote ? (
-          <VoteForm disputeId={disputeId} defendant={defendant.display_name} />
-        ) : null}
+        <VoteArea
+          disputeId={disputeId}
+          open={open}
+          hasVote={!!me.vote}
+          verdict={{
+            playKey: verdictKey,
+            tone: upheld ? "fail" : "done",
+            stamp: upheld ? "Condenado" : "Absolvido",
+            note: upheld
+              ? `${result.yes} a ${result.no}. Prova anulada: esta prova não conta e a meta deixa de valer.`
+              : `${result.no} a ${result.yes}. Prova mantida: a prova continua valendo.`,
+          }}
+        >
+          {me.vote ? (
+            <p className="font-medium">
+              Seu voto: <b className={me.vote.upheld ? "text-fail" : "text-done"}>{me.vote.upheld ? "anular a prova" : "manter a prova"}</b> (
+              {me.vote.upheld ? "culpado" : "inocente"}).
+            </p>
+          ) : me.isOwner ? (
+            <p className="text-sm text-muted">Você é o réu e não vota. Use a aba Provas para se defender.</p>
+          ) : me.joinedLate ? (
+            <p className="text-sm text-muted">Você entrou no grupo depois que este tribunal foi aberto e não vota.</p>
+          ) : me.canVote ? (
+            <VoteForm disputeId={disputeId} defendant={defendant.display_name} />
+          ) : null}
+        </VoteArea>
       </div>
     </section>
   );

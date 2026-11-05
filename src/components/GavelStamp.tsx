@@ -18,8 +18,10 @@ interface Props {
   tone: keyof typeof TONE;
   /** The animation plays once per device for this key: include the viewer (user + day, user + dispute). */
   playKey: string;
-  /** "stamp" for verifications, "gavel" for the jury's decision. */
-  action?: Extract<JudgeAction, "stamp" | "gavel">;
+  /** "stamp" for verifications, "gavel" for the jury's decision, "close" for a session closing in front of the voter. */
+  action?: Extract<JudgeAction, "stamp" | "gavel" | "close">;
+  /** false: the judge strikes but the stamp stays put (a verdict is never struck in: the gavel is not a conviction). */
+  jolt?: boolean;
   /** false when another judge on the page (the courtroom bench) plays the strike. */
   showJudge?: boolean;
   testId?: string;
@@ -29,7 +31,7 @@ interface Props {
  * A result stamp. The text (result and consequence) is visible from the start; only the art moves:
  * the judge strikes once and the stamp jolts on the impact frame.
  */
-export function GavelStamp({ stamp, note, tone, playKey, action = "gavel", showJudge = true, testId }: Props) {
+export function GavelStamp({ stamp, note, tone, playKey, action = "gavel", showJudge = true, jolt = true, testId }: Props) {
   const [hits, setHits] = useState(0);
 
   useEffect(() => {
@@ -41,7 +43,7 @@ export function GavelStamp({ stamp, note, tone, playKey, action = "gavel", showJ
 
   return (
     <div className="flex items-center gap-3" data-testid={testId} role="status">
-      {showJudge && <JudgeAnim action={action} playKey={playKey} onImpact={() => setHits((n) => n + 1)} />}
+      {showJudge && <JudgeAnim action={action} playKey={playKey} onImpact={jolt ? () => setHits((n) => n + 1) : undefined} />}
       <div className="min-w-0">
         <p
           key={hits}

@@ -11,6 +11,7 @@ node render.mjs judge-            # só os quadros do juiz
 ```
 
 - `models.js`: um modelo por sprite. O juiz é um modelo só (`judgeScene`), com uma pose por quadro em `JUDGE_FRAMES`. Cabeça, sobrancelhas, braços, martelo, lupa, carimbo e papel são peças separadas.
+- `ballot.js`: a urna do tribunal (cédula lisa entrando em 4 quadros, `node render.mjs ballot`), com um quadro invisível na altura máxima da cédula.
 - `crowd.js`: a multidão do tribunal (seis silhuetas de costas, da cintura para cima, cada uma em repouso e nas poses `a` e `b` do ajeitar, `node render.mjs crowd`); um quadro invisível deixa todas na mesma escala e na mesma linha de base. A página monta as cinco fileiras e os bancos (`CourtCrowd`).
 - `decor.js` e `collectibles.js`: objetos de ambiente e colecionáveis novos, em módulos separados para os nomes de funções auxiliares não colidirem com os do `models.js`. Cada função entra no `MODELS`.
 - A sequência e o tempo de cada animação ficam em `src/lib/judge.ts`. Um quadro novo precisa entrar nos dois arquivos.

@@ -453,11 +453,11 @@ function GoalForm({ goal, groupId, userId, mode = "first", onDone }: { goal: Goa
             ? goal === "project"
               ? "Você já registrou um projeto hoje."
               : "Essa meta já foi enviada hoje."
-            : error.message.includes("photo not uploaded")
+            : error.message?.includes("photo not uploaded")
               ? "A foto não terminou de subir. Tente de novo."
-              : error.message.includes("too many extra sessions")
+              : error.message?.includes("too many extra sessions")
                 ? `Limite de ${MAX_EXTRA_SESSIONS} sessões extras por dia.`
-                : error.message.includes("study proof first")
+                : error.message?.includes("study proof first")
                   ? "A prova de estudo de hoje precisa estar valendo para somar sessões."
                   : // The code tells a dropped connection ("rede") from a server refusal in a friend's screenshot.
                     `Não foi possível enviar (código ${error.code || "rede"}). Seus dados continuam aqui: tente de novo.`,

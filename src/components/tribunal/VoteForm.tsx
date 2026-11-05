@@ -4,6 +4,7 @@ import { Gavel, Loader, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { VOTED_EVENT } from "./VoteArea";
 
 const ERRORS: Record<string, string> = {
   "dispute closed": "A votação já foi encerrada.",
@@ -32,10 +33,12 @@ export function VoteForm({ disputeId, defendant }: { disputeId: string; defendan
       setError(
         error.code === "23505"
           ? "Você já votou."
-          : (Object.entries(ERRORS).find(([k]) => error.message.includes(k))?.[1] ?? "Não foi possível votar. Tente de novo."),
+          : (Object.entries(ERRORS).find(([k]) => error.message?.includes(k))?.[1] ?? "Não foi possível votar. Tente de novo."),
       );
       return;
     }
+    // Confirmed by the server: the ballot box drops the ballot once the refreshed page shows the vote.
+    window.dispatchEvent(new CustomEvent(VOTED_EVENT, { detail: disputeId }));
     router.refresh();
   }
 
